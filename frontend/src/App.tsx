@@ -2,10 +2,18 @@ import { useState, useRef, useEffect } from 'react';
 import './App.css'
 
 const App = () => {
+  const [isBroadcasting, setIsBroadcasting] = useState(false)
   const [values, setValues] = useState({ rpm: 0, tps: 0 });
   const ws = useRef<WebSocket | null>(null);
 
   useEffect(() => {
+    fetch('http://localhost:8000/status')
+      .then(res => {
+        return res.json()
+      })
+      .then(json => {
+        setIsBroadcasting(json.isBroadcasting)
+      })
     ws.current = new WebSocket('ws://localhost:8000/ws');
     return () => ws.current?.close();
   }, []);
@@ -14,20 +22,22 @@ const App = () => {
     const newVal = parseInt(val)
     setValues(prev => ({ ...prev, [name]: newVal }));
     if (ws.current && ws.current.readyState === WebSocket.OPEN) {
-      ws.current.send(JSON.stringify({[name]: newVal}))
+      ws.current.send(JSON.stringify({ [name]: newVal }))
     }
   };
 
   const changeStatus = (status: 'start' | 'stop') => {
-    fetch('http://localhost:8000/start-broadcast',
+    fetch('http://localhost:8000/status',
       {
-        method: 'POST',
+        method: 'put',
         headers: {
-          'Content-Type': 'application/json', // CRITICAL
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({ status })
       }
     )
+    .then(res => res.json())
+    .then(json => setIsBroadcasting(json.isBroadcasting))
   }
 
   return (
@@ -52,8 +62,11 @@ const App = () => {
             onChange={(e) => handleChange('tps', e.target.value)}
           />
         </section>
-        <button onClick={() => changeStatus('start')}>Start</button>
-        <button onClick={() => changeStatus('stop')}>Stop</button>
+        {isBroadcasting ? (
+          <button onClick={() => changeStatus('stop')}>Stop</button>
+        ) : (
+          <button onClick={() => changeStatus('start')}>Start</button>
+        )}
       </div>
     </div>
   );

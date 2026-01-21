@@ -1,25 +1,14 @@
 import asyncio
-from enum import Enum
 import can
+
+from contextlib import asynccontextmanager
 from fastapi import FastAPI, WebSocket
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
 
-app = FastAPI()
+from schemas.state import StateContainer
+from api import api_router
 
-origins = [
-    "http://localhost:5173",
-]
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
-# Global state for our ECU variables
 ecu_state = {
     "rpm": 0,
     "tps": 0,
@@ -29,19 +18,16 @@ ecu_state = {
     "eth_content": 0
 }
 
-broadcast_event = asyncio.Event()
-
-# Setup CAN bus (Assumes can0 is configured in OS)
 try:
     bus = can.interface.Bus(channel='can0', bustype='socketcan')
 except Exception as e:
     print(f"CAN hardware not found, using virtual bus: {e}")
     bus = can.interface.Bus(channel='vcan0', bustype='socketcan')
 
-async def can_broadcast_loop():
+async def can_broadcast_loop(event: asyncio.Event):
     """Background task to send CAN messages at 50Hz (every 20ms)"""
     while True:
-        await broadcast_event.wait()
+        await event.wait()
         rpm = ecu_state["rpm"]
         tps = ecu_state["tps"]
         
@@ -56,9 +42,31 @@ async def can_broadcast_loop():
             pass
         await asyncio.sleep(1)
 
-@app.on_event("startup")
-async def startup_event():
-    asyncio.create_task(can_broadcast_loop())
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Setup state
+    state_container = StateContainer()
+    app.state.manager = state_container
+    
+    task = asyncio.create_task(can_broadcast_loop(state_container.can_broadcast_event))
+    
+    yield
+    task.cancel()
+
+app = FastAPI(lifespan=lifespan)
+app.include_router(api_router)
+
+origins = [
+    "http://localhost:5173",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
@@ -68,18 +76,3 @@ async def websocket_endpoint(websocket: WebSocket):
         data = await websocket.receive_json()
         print(f"received: {data}")
         ecu_state.update(data)
-
-class StatusOptions(str, Enum):
-    start = "start"
-    stop = "stop"
-
-class Status(BaseModel):
-    status: StatusOptions
-
-@app.post("/start-broadcast")
-async def start_broadcast(data: Status):
-    if data.status == "start":
-        broadcast_event.set()
-    elif data.status == "stop":
-        broadcast_event.clear()
-
