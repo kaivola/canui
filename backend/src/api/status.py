@@ -1,23 +1,22 @@
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, Depends, Request
 
+from util.get_state import get_state
 from schemas.state import StateContainer
 from schemas.status import Status
 
 router = APIRouter()
 
 @router.get("/")
-async def get_status(request: Request):
-    app_state: StateContainer = request.app.state.manager
-    return {"isBroadcasting": app_state.data.isBroadcasting}
+async def get_status(state: StateContainer = Depends(get_state)):
+    return {"isBroadcasting": state.data.isBroadcasting}
 
 
 @router.put("/")
-async def update_status(request: Request, data: Status):
-    app_state: StateContainer = request.app.state.manager
+async def update_status(data: Status, state: StateContainer = Depends(get_state)):
     if data.status == "start":
-        app_state.data.isBroadcasting = True
-        app_state.can_broadcast_event.set()
+        state.data.isBroadcasting = True
+        state.can_broadcast_event.set()
     elif data.status == "stop":
-        app_state.data.isBroadcasting = False
-        app_state.can_broadcast_event.clear()
-    return {"isBroadcasting": app_state.data.isBroadcasting}
+        state.data.isBroadcasting = False
+        state.can_broadcast_event.clear()
+    return {"isBroadcasting": state.data.isBroadcasting}
