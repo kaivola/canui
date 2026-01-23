@@ -6,12 +6,12 @@ from schemas.status import Status
 
 router = APIRouter()
 
-@router.get("/")
+@router.get("")
 async def get_status(state: StateContainer = Depends(get_state)):
     return {"isBroadcasting": state.data.isBroadcasting}
 
 
-@router.put("/")
+@router.put("")
 async def update_status(data: Status, state: StateContainer = Depends(get_state)):
     if data.status == "start":
         state.data.isBroadcasting = True
