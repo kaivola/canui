@@ -14,7 +14,7 @@ const App = () => {
       .then(json => {
         setIsBroadcasting(json.isBroadcasting)
       })
-    ws.current = new WebSocket('ws://localhost:8000/ws');
+    ws.current = new WebSocket('ws://localhost:8000/can-data');
     return () => ws.current?.close();
   }, []);
 

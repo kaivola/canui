@@ -1,10 +1,11 @@
 from pydantic import BaseModel
 import asyncio
 
-from .status import StatusOptions
+from .ecu_state import ECUState
 
 class AppState(BaseModel):
     isBroadcasting: bool = False
+    ecu_state: ECUState = ECUState()
     # Note: asyncio.Event is not a Pydantic type, 
     # so we exclude it from validation logic if needed
     class Config:

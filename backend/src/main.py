@@ -67,12 +67,3 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-@app.websocket("/ws")
-async def websocket_endpoint(websocket: WebSocket):
-    await websocket.accept()
-    while True:
-        # Receive JSON updates from React (e.g., {"rpm": 3000})
-        data = await websocket.receive_json()
-        print(f"received: {data}")
-        ecu_state.update(data)
