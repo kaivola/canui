@@ -3,12 +3,12 @@ from pydantic import ValidationError
 
 from schemas.ecu_state import ECUState
 from schemas.state import AppState
-from util.get_state import get_ws_ecu_state
+from util.get_state import get_state_ws
 
 router = APIRouter()
 
 @router.websocket("")
-async def can_data_websocket(websocket: WebSocket, state: AppState = Depends(get_ws_ecu_state)):
+async def can_data_websocket(websocket: WebSocket, state: AppState = Depends(get_state_ws)):
     await websocket.accept()
     ecu_state = state.data.ecu_state
     while True:
