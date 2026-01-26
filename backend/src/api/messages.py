@@ -1,0 +1,11 @@
+from fastapi import APIRouter, Depends
+from schemas.dto.message_dto import MessageDto
+from schemas.state import AppState
+from util.get_state import get_state
+
+router = APIRouter()
+
+
+@router.get("", response_model=list[MessageDto])
+def get_messages(state: AppState = Depends(get_state)):
+    return [MessageDto.from_can_message(m) for m in state.data.messages]
