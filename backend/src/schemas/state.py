@@ -1,8 +1,7 @@
 from pydantic import BaseModel
-import asyncio
 
-from .ecu_state import ECUState
 from .can_message import CanMessage
+from .ecu_state import ECUState
 
 
 class AppState(BaseModel):
@@ -20,4 +19,3 @@ class AppState(BaseModel):
 class StateContainer:
     def __init__(self):
         self.data = AppState()
-        self.can_broadcast_event = asyncio.Event()
