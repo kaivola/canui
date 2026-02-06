@@ -17,10 +17,13 @@ except Exception as e:
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    state_container = StateContainer()
+    state_container = StateContainer(bus)
     db = get_db("./MaxxECU_v1.3.dbc")
-    messages = [CanMessage(msg, bus) for msg in db.messages]
+    if db is None:
+        raise RuntimeError()
+    messages = [CanMessage(msg) for msg in db.messages]
 
+    state_container.bus = bus
     state_container.data.messages = messages
     app.state.manager = state_container
     yield

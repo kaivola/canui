@@ -1,12 +1,11 @@
+from can import BusABC
 from pydantic import BaseModel
 
 from .can_message import CanMessage
-from .ecu_state import ECUState
 
 
 class AppState(BaseModel):
     isBroadcasting: bool = False
-    ecu_state: ECUState = ECUState()
     messages: list[CanMessage] = []
 
     # Note: asyncio.Event is not a Pydantic type,
@@ -17,5 +16,6 @@ class AppState(BaseModel):
 
 # A container for the non-Pydantic objects
 class StateContainer:
-    def __init__(self):
+    def __init__(self, bus):
+        self.bus: BusABC = bus
         self.data = AppState()
