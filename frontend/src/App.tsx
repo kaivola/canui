@@ -1,9 +1,11 @@
 import { useState, useRef, useEffect } from 'react';
-import './App.css'
+import type { Message } from './types/schema';
+import { Container, Grid, Section } from '@radix-ui/themes';
+import { CanMessage } from './components/CanMessage';
 
 const App = () => {
   const [isBroadcasting, setIsBroadcasting] = useState(false)
-  const [values, setValues] = useState({ rpm: 0, tps: 0 });
+  const [messages, setMessages] = useState<Message[]>([])
   const ws = useRef<WebSocket | null>(null);
 
   useEffect(() => {
@@ -18,11 +20,32 @@ const App = () => {
     return () => ws.current?.close();
   }, []);
 
-  const handleChange = (name: string, val: string) => {
-    const newVal = parseInt(val)
-    setValues(prev => ({ ...prev, [name]: newVal }));
-    if (ws.current && ws.current.readyState === WebSocket.OPEN) {
-      ws.current.send(JSON.stringify({ [name]: newVal }))
+  useEffect(() => {
+    fetch('http://localhost:8000/messages')
+      .then(res => res.json())
+      .then((data: Message[]) => {
+        setMessages(data)
+        console.log('data', data)
+      })
+  }, [])
+
+  const handleChange = (messageId: number) => (signalName: string) => (value: number) => {
+    console.log('messageId', messageId, 'signalName', signalName, 'value', value)
+    setMessages(prevMessages =>
+      prevMessages.map(m => {
+        if (m.id !== messageId) return m
+        return {
+          ...m,
+          signals: m.signals.map(s =>
+            s.name === signalName
+              ? { ...s, value }
+              : s
+          )
+        };
+      })
+    )
+    if (ws.current?.readyState === WebSocket.OPEN) {
+      ws.current.send(JSON.stringify({ messageId, signalName, value }))
     }
   };
 
@@ -36,39 +59,25 @@ const App = () => {
         body: JSON.stringify({ status })
       }
     )
-    .then(res => res.json())
-    .then(json => setIsBroadcasting(json.isBroadcasting))
+      .then(res => res.json())
+      .then(json => setIsBroadcasting(json.isBroadcasting))
   }
 
   return (
-    <div>
-      <h1>MaxxECU Simulator</h1>
-
-      <div>
-        <section>
-          <label>RPM: {values.rpm}</label>
-          <input
-            type="range" min="0" max="9000" step="50"
-            value={values.rpm}
-            onChange={(e) => handleChange('rpm', e.target.value)}
-          />
-        </section>
-
-        <section>
-          <label>Throttle (TPS): {values.tps}%</label>
-          <input
-            type="range" min="0" max="100"
-            value={values.tps}
-            onChange={(e) => handleChange('tps', e.target.value)}
-          />
-        </section>
+    <Container height={"100%"}>
+      <Grid columns={'2'}>
+        {messages?.length && messages.toSorted((a, b) => a.id - b.id).map(message => (
+          <CanMessage key={message.id} message={message} onSignalChange={handleChange(message.id)} />
+        ))}
+      </Grid>
+      <Section>
         {isBroadcasting ? (
           <button onClick={() => changeStatus('stop')}>Stop</button>
         ) : (
           <button onClick={() => changeStatus('start')}>Start</button>
         )}
-      </div>
-    </div>
+      </Section>
+    </Container>
   );
 };
 
