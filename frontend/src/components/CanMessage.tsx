@@ -1,19 +1,24 @@
-import { Flex } from "@radix-ui/themes"
-import type { Message } from "../types/schema"
-import { Signal } from "./Signal"
+import { Button, Card, Flex, Text } from "@radix-ui/themes";
+import type { Message } from "../types/schema";
+import { Signal } from "./Signal";
 
 interface Props {
-    message: Message
-    onSignalChange: (signalName: string) => (value: number) => void;
+  message: Message;
+  onSignalChange: (signalName: string) => (value: number) => void;
+  changeVisibility: () => void;
 }
 
-export const CanMessage = ({ message, onSignalChange }: Props) => {
-
-    return (
-        <Flex direction={'column'} gap={"1"} style={{ backgroundColor: "var(--gray-a2)", borderRadius: "var(--radius-3)" }}>
-            {message.signals.map(signal => (
-                <Signal key={signal.name} signal={signal} onChange={onSignalChange(signal.name)} />
-            ))}
-        </Flex>
-    )
-}
+export const CanMessage = ({ message, onSignalChange, changeVisibility: onHideClick }: Props) => {
+  return (
+    <Card>
+      <Flex justify={"between"} mb={"4"}>
+        <Text size={"8"}>{message.id}</Text>
+        <Button onClick={onHideClick}>{message.hidden ? "Show" : "Hide"}</Button>
+      </Flex>
+      {!message.hidden &&
+        message.signals.map((signal) => (
+          <Signal key={signal.name} signal={signal} onChange={onSignalChange(signal.name)} />
+        ))}
+    </Card>
+  );
+};
