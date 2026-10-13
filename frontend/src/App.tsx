@@ -77,11 +77,7 @@ const App = () => {
       </Section>
       <Grid columns={"2"} gap={"4"} mx={"4"}>
         {Boolean(messages?.length) &&
-          messages
-            .toSorted((a, b) => {
-              return a.id - b.id
-            })
-            .map((message) => (
+          messages.map((message) => (
               <CanMessage
                 key={message.id}
                 message={message}

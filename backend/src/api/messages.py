@@ -8,4 +8,4 @@ router = APIRouter()
 
 @router.get("", response_model=list[MessageDto])
 def get_messages(state: StateContainer = Depends(get_state)):
-    return [MessageDto.from_can_message(m) for m in state.data.messages]
+    return sorted([MessageDto.from_can_message(m) for m in state.data.messages], key=lambda x: x.id)
