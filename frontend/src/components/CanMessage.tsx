@@ -10,7 +10,7 @@ interface Props {
 
 export const CanMessage = ({ message, onSignalChange, changeVisibility: onHideClick }: Props) => {
   return (
-    <Card>
+    <Card mb={'4'}>
       <Flex justify={"between"} mb={"4"}>
         <Text size={"8"}>{message.id}</Text>
         <Button onClick={onHideClick}>{message.hidden ? "Show" : "Hide"}</Button>

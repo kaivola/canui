@@ -1,7 +1,8 @@
 import { useState, useRef, useEffect } from "react";
 import type { Message } from "./types/schema";
-import { Button, Flex, Grid, Heading, Section } from "@radix-ui/themes";
+import { Button, Flex, Heading, Section } from "@radix-ui/themes";
 import { CanMessage } from "./components/CanMessage";
+import { dbcSignals } from "./utils/signals";
 
 const App = () => {
   const [isBroadcasting, setIsBroadcasting] = useState(false);
@@ -26,14 +27,18 @@ const App = () => {
     fetch("http://localhost:8000/messages")
       .then((res) => res.json())
       .then((data: Message[]) => {
-        setMessages(data);
-        console.log("data", data);
+        setMessages(
+          data.map((d) => ({
+            ...d,
+            signals: d.signals.map((s) => ({ ...s, displayName: dbcSignals[d.id][s.name] })),
+          })),
+        );
       })
       .catch((e) => console.error(e));
   }, []);
 
   const handleChange = (messageId: number) => (signalName: string) => (value: number) => {
-    console.log("messageId", messageId, "signalName", signalName, "value", value);
+    // console.log("messageId", messageId, "signalName", signalName, "value", value);
     setMessages((prevMessages) =>
       prevMessages.map((m) => {
         if (m.id !== messageId) return m;
@@ -75,17 +80,17 @@ const App = () => {
           </Button>
         </Flex>
       </Section>
-      <Grid columns={"2"} gap={"4"} mx={"4"}>
+      <div style={{ columnCount: 2, columnGap: "4 rem" }}>
         {Boolean(messages?.length) &&
           messages.map((message) => (
-              <CanMessage
-                key={message.id}
-                message={message}
-                changeVisibility={() => changeVisibility(message.id)}
-                onSignalChange={handleChange(message.id)}
-              />
-            ))}
-      </Grid>
+            <CanMessage
+              key={message.id}
+              message={message}
+              changeVisibility={() => changeVisibility(message.id)}
+              onSignalChange={handleChange(message.id)}
+            />
+          ))}
+      </div>
     </div>
   );
 };
