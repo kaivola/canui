@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, WebSocket
+from fastapi import APIRouter, Depends, WebSocket, WebSocketDisconnect
 from schemas.state import StateContainer
 from util.get_state import get_state_ws
 
@@ -11,18 +11,21 @@ async def can_data_websocket(
 ):
     await websocket.accept()
     messages = state.data.messages
-    while True:
-        data = await websocket.receive_json()
-        message_id = data["messageId"]
-        signal_name = data["signalName"]
-        value = data["value"]
-        print(f"received: {data}")
+    try:
+        while True:
+            data = await websocket.receive_json()
+            message_id = data["messageId"]
+            signal_name = data["signalName"]
+            value = data["value"]
+            print(f"received: {data}")
 
-        for msg in messages:
-            if msg.id != message_id:
-                continue
-            if signal_name not in msg.signal_values:
-                raise RuntimeError(f"Invalid signal name: {signal_name}")
+            for msg in messages:
+                if msg.id != message_id:
+                    continue
+                if signal_name not in msg.signal_values:
+                    raise RuntimeError(f"Invalid signal name: {signal_name}")
 
-            msg.update_signal(signal=signal_name, data=value)
-            break
+                msg.update_signal(signal=signal_name, data=value)
+                break
+    except WebSocketDisconnect:
+        print("Client disconnected (page refreshed or closed)")
