@@ -8,14 +8,12 @@ class AppState(BaseModel):
     isBroadcasting: bool = False
     messages: list[CanMessage] = []
 
-    # Note: asyncio.Event is not a Pydantic type,
-    # so we exclude it from validation logic if needed
     class Config:
         arbitrary_types_allowed = True
 
 
 # A container for the non-Pydantic objects
 class StateContainer:
-    def __init__(self, bus):
+    def __init__(self, bus: BusABC):
         self.bus: BusABC = bus
         self.data = AppState()

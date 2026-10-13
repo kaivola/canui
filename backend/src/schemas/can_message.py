@@ -45,8 +45,9 @@ class CanMessage:
         if not hasattr(self, "task") or self.task is None:
             return
         msg = self.task.messages[0]
-        old_decoded = self.dbc_entry.decode_simple(msg.data)
-        old_decoded.update({signal: data})
-        new_data = self.dbc_entry.encode(old_decoded)
+        decoded_data = self.dbc_entry.decode_simple(bytes(msg.data))
+        decoded_data.update({signal: data})
+        new_data = self.dbc_entry.encode(decoded_data)
         msg.data = bytearray(new_data)
         self.task.modify_data(msg)
+        self.signal_values[signal] = data
