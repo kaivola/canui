@@ -1,12 +1,13 @@
 import { Card, Flex, Slider, Switch, Text } from "@radix-ui/themes";
 import type { Signal as SignalType } from "../types/schema";
+import { memo } from "react";
 
 interface Props {
   signal: SignalType;
   onChange: (value: number) => void;
 }
 
-export const Signal = ({ signal, onChange }: Props) => {
+export const Signal = memo(({ signal, onChange }: Props) => {
   return (
     <Card mb={"4"}>
       <Flex direction={"column"} gap={"6"}>
@@ -30,4 +31,4 @@ export const Signal = ({ signal, onChange }: Props) => {
       </Flex>
     </Card>
   );
-};
+});

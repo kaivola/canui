@@ -6,8 +6,9 @@ import { dbcSignals } from "./utils/signals";
 
 const App = () => {
   const [isBroadcasting, setIsBroadcasting] = useState(false);
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<Record<number, Message>>([]);
   const ws = useRef<WebSocket | null>(null);
+  const timerRef = useRef<number | null>(null);
 
   useEffect(() => {
     fetch("http://localhost:8000/status")
@@ -28,10 +29,16 @@ const App = () => {
       .then((res) => res.json())
       .then((data: Message[]) => {
         setMessages(
-          data.map((d) => ({
-            ...d,
-            signals: d.signals.map((s) => ({ ...s, displayName: dbcSignals[d.id][s.name] })),
-          })),
+          data.reduce(
+            (prev, curr) => {
+              prev[curr.id] = {
+                ...curr,
+                signals: curr.signals.map((s) => ({ ...s, displayName: dbcSignals[curr.id][s.name] })),
+              };
+              return prev;
+            },
+            {} as Record<number, Message>,
+          ),
         );
       })
       .catch((e) => console.error(e));
@@ -39,18 +46,25 @@ const App = () => {
 
   const handleChange = (messageId: number) => (signalName: string) => (value: number) => {
     // console.log("messageId", messageId, "signalName", signalName, "value", value);
-    setMessages((prevMessages) =>
-      prevMessages.map((m) => {
-        if (m.id !== messageId) return m;
-        return {
+    setMessages((prevMessages) => {
+      const m = prevMessages[messageId];
+      if (!m) return prevMessages;
+      return {
+        ...prevMessages,
+        [messageId]: {
           ...m,
           signals: m.signals.map((s) => (s.name === signalName ? { ...s, value } : s)),
-        };
-      }),
-    );
-    if (ws.current?.readyState === WebSocket.OPEN) {
-      ws.current.send(JSON.stringify({ messageId, signalName, value }));
-    }
+        },
+      };
+    });
+
+    if (timerRef.current) clearTimeout(timerRef.current);
+
+    timerRef.current = setTimeout(() => {
+      if (ws.current?.readyState === WebSocket.OPEN) {
+        ws.current.send(JSON.stringify({ messageId, signalName, value }));
+      }
+    }, 50);
   };
 
   const changeStatus = (status: "start" | "stop") => {
@@ -67,7 +81,16 @@ const App = () => {
   };
 
   const changeVisibility = (id: number) => {
-    setMessages(messages.map((m) => (m.id === id ? { ...m, hidden: !m.hidden } : m)));
+    setMessages((prevMessages) => {
+      const m = prevMessages[id]
+      return {
+      ...prevMessages,
+      [id]: {
+        ...m,
+        hidden: !m.hidden,
+      },
+      }
+    });
   };
 
   return (
@@ -81,8 +104,8 @@ const App = () => {
         </Flex>
       </Section>
       <div style={{ columnCount: 2, columnGap: "4 rem" }}>
-        {Boolean(messages?.length) &&
-          messages.map((message) => (
+        {Boolean(Object.keys(messages).length) &&
+          Object.values(messages).map((message) => (
             <CanMessage
               key={message.id}
               message={message}
