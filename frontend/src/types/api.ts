@@ -67,6 +67,11 @@ export interface components {
             min_value: number | null;
             /** Max Value */
             max_value: number | null;
+            /**
+             * Value
+             * @default 0
+             */
+            value: number;
         };
         /** Status */
         Status: {
