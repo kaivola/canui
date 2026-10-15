@@ -1,11 +1,11 @@
 import type { components } from "./api";
 
-type SignalDto = components['schemas']['SignalDto']
-type MessageDto = components['schemas']['MessageDto']
+export type SignalDto = components['schemas']['SignalDto']
+export type MessageDto = components['schemas']['MessageDto']
 
 export type Message = Omit<MessageDto, 'signals'> & {
     hidden: boolean
-    signals: Signal[]
+    signals: Record<string, Signal>
 }
 export type Signal = SignalDto & {
     displayName: string

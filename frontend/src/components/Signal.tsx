@@ -4,7 +4,7 @@ import { memo } from "react";
 
 interface Props {
   signal: SignalType;
-  onChange: (value: number) => void;
+  onChange: (signalName: string, value: number) => void;
 }
 
 export const Signal = memo(({ signal, onChange }: Props) => {
@@ -21,12 +21,12 @@ export const Signal = memo(({ signal, onChange }: Props) => {
         {signal.length > 1 ? (
           <Slider
             defaultValue={[signal.value ?? 0]}
-            onValueChange={(e) => onChange(e[0])}
+            onValueChange={(e) => onChange(signal.name, e[0])}
             min={signal.min_value ?? 0}
             max={signal.max_value ?? Number.MAX_SAFE_INTEGER}
           />
         ) : (
-          <Switch onCheckedChange={val => onChange(val ? 1 : 0)} />
+          <Switch onCheckedChange={val => onChange(signal.name, val ? 1 : 0)} />
         )}
       </Flex>
     </Card>
