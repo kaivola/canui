@@ -25,7 +25,7 @@ async def can_data_websocket(
                 if signal_name not in msg.signal_values:
                     raise RuntimeError(f"Invalid signal name: {signal_name}")
 
-                msg.update_signal(signal=signal_name, data=value)
+                msg.update_signal(signal=signal_name, new_value=value)
                 break
     except WebSocketDisconnect:
         print("Client disconnected (page refreshed or closed)")

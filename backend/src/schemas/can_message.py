@@ -8,7 +8,7 @@ class CanMessage:
     dbc_entry: DbcMessage
     task: ModifiableCyclicTaskABC | None
     freq: int
-    signal_values: dict[str, int]
+    signal_values: dict[str, int | float]
 
     def __init__(self, dbc_entry: DbcMessage, freq: int = 1):
         self.dbc_entry = dbc_entry
@@ -41,13 +41,14 @@ class CanMessage:
                 "The current CAN interface does not support modifiable tasks."
             )
 
-    def update_signal(self, signal: str, data: int):
+    def update_signal(self, signal: str, new_value: int | float):
         if not hasattr(self, "task") or self.task is None:
             return
         msg = self.task.messages[0]
         decoded_data = self.dbc_entry.decode_simple(bytes(msg.data))
-        decoded_data.update({signal: data})
+        print(f"value: {new_value}")
+        decoded_data.update({signal: new_value})
         new_data = self.dbc_entry.encode(decoded_data)
         msg.data = bytearray(new_data)
         self.task.modify_data(msg)
-        self.signal_values[signal] = data
+        self.signal_values[signal] = new_value

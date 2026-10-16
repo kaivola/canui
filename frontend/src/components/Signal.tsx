@@ -22,8 +22,9 @@ export const Signal = memo(({ signal, onChange }: Props) => {
           <Slider
             defaultValue={[signal.value ?? 0]}
             onValueChange={(e) => onChange(signal.name, e[0])}
-            min={signal.min_value ?? 0}
-            max={signal.max_value ?? Number.MAX_SAFE_INTEGER}
+            min={signal.nominal_min ?? 0}
+            max={signal.nominal_max ?? Number.MAX_SAFE_INTEGER}
+            step={signal.step}
           />
         ) : (
           <Switch onCheckedChange={val => onChange(signal.name, val ? 1 : 0)} />

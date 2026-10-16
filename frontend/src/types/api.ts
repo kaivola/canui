@@ -67,6 +67,15 @@ export interface components {
             min_value: number | null;
             /** Max Value */
             max_value: number | null;
+            /** Nominal Min */
+            nominal_min?: number | null;
+            /** Nominal Max */
+            nominal_max?: number | null;
+            /**
+             * Step
+             * @default 1
+             */
+            step: number;
             /**
              * Value
              * @default 0
