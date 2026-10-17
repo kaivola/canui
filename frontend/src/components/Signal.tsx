@@ -1,6 +1,6 @@
 import { Card, Flex, Slider, Switch, Text } from "@radix-ui/themes";
+import { type FocusEvent, type KeyboardEvent, memo, useState } from "react";
 import type { Signal as SignalType } from "../types/schema";
-import { memo, useState, type FocusEvent, type KeyboardEvent } from "react";
 
 interface Props {
   signal: SignalType;
@@ -10,11 +10,13 @@ interface Props {
 export const Signal = memo(({ signal, onChange }: Props) => {
   const [editMode, setEditMode] = useState<boolean>(false);
 
-  const saveInput = (e: FocusEvent<HTMLInputElement> | KeyboardEvent<HTMLInputElement>) => {
-    if ('key' in e && e.key !== 'Enter') {
-      return
+  const saveInput = (
+    e: FocusEvent<HTMLInputElement> | KeyboardEvent<HTMLInputElement>,
+  ) => {
+    if ("key" in e && e.key !== "Enter") {
+      return;
     }
-    const val = Number(e.currentTarget.value)
+    const val = Number(e.currentTarget.value);
 
     onChange(signal.name, val);
     setEditMode(false);
@@ -27,7 +29,12 @@ export const Signal = memo(({ signal, onChange }: Props) => {
           <Flex justify={"between"} align={"center"}>
             <Text size={"4"}>{signal.displayName}</Text>
             {editMode ? (
-              <input id={signal.name} defaultValue={signal.value} onBlur={saveInput} onKeyDown={saveInput} />
+              <input
+                id={signal.name}
+                defaultValue={signal.value}
+                onBlur={saveInput}
+                onKeyDown={saveInput}
+              />
             ) : (
               <Text onClick={() => setEditMode(true)} size={"7"}>
                 {signal.value}
@@ -45,7 +52,9 @@ export const Signal = memo(({ signal, onChange }: Props) => {
             step={signal.step}
           />
         ) : (
-          <Switch onCheckedChange={(val) => onChange(signal.name, val ? 1 : 0)} />
+          <Switch
+            onCheckedChange={(val) => onChange(signal.name, val ? 1 : 0)}
+          />
         )}
       </Flex>
     </Card>

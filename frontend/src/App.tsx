@@ -1,43 +1,47 @@
-import { useRef, useEffect, useCallback } from "react";
 import { Button, Flex, Heading, Section } from "@radix-ui/themes";
+import { useCallback, useEffect, useRef } from "react";
 import { CanMessage } from "./components/CanMessage";
-import { WEBSOCKET_URL } from "./utils/constants";
 import { useMessages } from "./hooks/useMessages";
 import { useStatus } from "./hooks/useStatus";
+import { WEBSOCKET_URL } from "./utils/constants";
 
 const App = () => {
   const ws = useRef<WebSocket | null>(null);
   const timerRef = useRef<number | null>(null);
 
-  const { messages, changeVisibility, updateSignalValue } = useMessages()
-  const { isTransmitting, changeStatus } = useStatus()
+  const { messages, changeVisibility, updateSignalValue } = useMessages();
+  const { isTransmitting, changeStatus } = useStatus();
 
   useEffect(() => {
     ws.current = new WebSocket(WEBSOCKET_URL + "/can-data");
     return () => ws.current?.close();
-  }, [])
+  }, []);
 
-  const handleChange = useCallback((messageId: number) => {
-    return (signalName: string, value: number) => {
-      
-      updateSignalValue(messageId, signalName, value)
+  const handleChange = useCallback(
+    (messageId: number) => {
+      return (signalName: string, value: number) => {
+        updateSignalValue(messageId, signalName, value);
 
-      if (timerRef.current) clearTimeout(timerRef.current);
+        if (timerRef.current) clearTimeout(timerRef.current);
 
-      timerRef.current = setTimeout(() => {
-        if (ws.current?.readyState === WebSocket.OPEN) {
-          ws.current.send(JSON.stringify({ messageId, signalName, value }));
-        }
-      }, 50);
-    };
-  }, [updateSignalValue]);
+        timerRef.current = setTimeout(() => {
+          if (ws.current?.readyState === WebSocket.OPEN) {
+            ws.current.send(JSON.stringify({ messageId, signalName, value }));
+          }
+        }, 50);
+      };
+    },
+    [updateSignalValue],
+  );
 
   return (
     <div>
       <Section px={"4"}>
         <Flex justify={"between"}>
           <Heading>Can Simulator</Heading>
-          <Button onClick={() => changeStatus(isTransmitting ? "stop" : "start")}>
+          <Button
+            onClick={() => changeStatus(isTransmitting ? "stop" : "start")}
+          >
             {isTransmitting ? "stop" : "start"}
           </Button>
         </Flex>

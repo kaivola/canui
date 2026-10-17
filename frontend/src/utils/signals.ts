@@ -147,4 +147,4 @@ export const dbcSignals: Record<number, Record<string, string>> = {
     GearPosn: "Gear position",
     Boost_Solenoid_Duty: "Boost solenoid duty",
   },
-} as const
+} as const;

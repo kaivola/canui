@@ -1,6 +1,5 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { BACKEND_URL } from "../utils/constants";
-
 
 export const useStatus = () => {
   const [isTransmitting, setIsTransmitting] = useState(false);
@@ -27,8 +26,7 @@ export const useStatus = () => {
         setIsTransmitting(json.isBroadcasting);
       })
       .catch((e) => console.error(e));
-
   }, []);
 
-  return { isTransmitting, changeStatus }
-}
+  return { isTransmitting, changeStatus };
+};

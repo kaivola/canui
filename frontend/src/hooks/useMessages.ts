@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import type { MessageDto, Message } from "../types/schema";
-import { dbcSignals } from "../utils/signals";
+import type { Message, MessageDto } from "../types/schema";
 import { BACKEND_URL } from "../utils/constants";
+import { dbcSignals } from "../utils/signals";
 
 type Messages = Record<number, Message>;
 
@@ -32,7 +32,11 @@ const mapMessageData = (data: MessageDto[]): Messages => {
 export const useMessages = () => {
   const [messages, setMessages] = useState<Messages>([]);
 
-  const updateSignalValue = (messageId: number, signalName: string, value: number) => {
+  const updateSignalValue = (
+    messageId: number,
+    signalName: string,
+    value: number,
+  ) => {
     setMessages((prevMessages) => {
       const targetMessage = prevMessages[messageId];
       if (!targetMessage) return prevMessages;
@@ -64,7 +68,7 @@ export const useMessages = () => {
         },
       };
     });
-  }
+  };
 
   useEffect(() => {
     fetch(BACKEND_URL + "/messages")

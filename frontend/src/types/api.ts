@@ -4,182 +4,182 @@
  */
 
 export interface paths {
-    "/status": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get Status */
-        get: operations["get_status_status_get"];
-        /** Update Status */
-        put: operations["update_status_status_put"];
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+  "/status": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/messages": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get Messages */
-        get: operations["get_messages_messages_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    /** Get Status */
+    get: operations["get_status_status_get"];
+    /** Update Status */
+    put: operations["update_status_status_put"];
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/messages": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
+    /** Get Messages */
+    get: operations["get_messages_messages_get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
-    schemas: {
-        /** HTTPValidationError */
-        HTTPValidationError: {
-            /** Detail */
-            detail?: components["schemas"]["ValidationError"][];
-        };
-        /** MessageDto */
-        MessageDto: {
-            /** Id */
-            id: number;
-            /** Signals */
-            signals: components["schemas"]["SignalDto"][];
-        };
-        /** SignalDto */
-        SignalDto: {
-            /** Name */
-            name: string;
-            /** Comment */
-            comment: string | null;
-            /** Length */
-            length: number;
-            /** Min Value */
-            min_value: number | null;
-            /** Max Value */
-            max_value: number | null;
-            /** Nominal Min */
-            nominal_min?: number | null;
-            /** Nominal Max */
-            nominal_max?: number | null;
-            /**
-             * Step
-             * @default 1
-             */
-            step: number;
-            /**
-             * Value
-             * @default 0
-             */
-            value: number;
-        };
-        /** Status */
-        Status: {
-            status: components["schemas"]["StatusOptions"];
-        };
-        /**
-         * StatusOptions
-         * @enum {string}
-         */
-        StatusOptions: "start" | "stop";
-        /** ValidationError */
-        ValidationError: {
-            /** Location */
-            loc: (string | number)[];
-            /** Message */
-            msg: string;
-            /** Error Type */
-            type: string;
-        };
+  schemas: {
+    /** HTTPValidationError */
+    HTTPValidationError: {
+      /** Detail */
+      detail?: components["schemas"]["ValidationError"][];
     };
-    responses: never;
-    parameters: never;
-    requestBodies: never;
-    headers: never;
-    pathItems: never;
+    /** MessageDto */
+    MessageDto: {
+      /** Id */
+      id: number;
+      /** Signals */
+      signals: components["schemas"]["SignalDto"][];
+    };
+    /** SignalDto */
+    SignalDto: {
+      /** Name */
+      name: string;
+      /** Comment */
+      comment: string | null;
+      /** Length */
+      length: number;
+      /** Min Value */
+      min_value: number | null;
+      /** Max Value */
+      max_value: number | null;
+      /** Nominal Min */
+      nominal_min?: number | null;
+      /** Nominal Max */
+      nominal_max?: number | null;
+      /**
+       * Step
+       * @default 1
+       */
+      step: number;
+      /**
+       * Value
+       * @default 0
+       */
+      value: number;
+    };
+    /** Status */
+    Status: {
+      status: components["schemas"]["StatusOptions"];
+    };
+    /**
+     * StatusOptions
+     * @enum {string}
+     */
+    StatusOptions: "start" | "stop";
+    /** ValidationError */
+    ValidationError: {
+      /** Location */
+      loc: (string | number)[];
+      /** Message */
+      msg: string;
+      /** Error Type */
+      type: string;
+    };
+  };
+  responses: never;
+  parameters: never;
+  requestBodies: never;
+  headers: never;
+  pathItems: never;
 }
 export type $defs = Record<string, never>;
 export interface operations {
-    get_status_status_get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": unknown;
-                };
-            };
-        };
+  get_status_status_get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    update_status_status_put: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
         };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["Status"];
-            };
+        content: {
+          "application/json": unknown;
         };
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": unknown;
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
+      };
     };
-    get_messages_messages_get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["MessageDto"][];
-                };
-            };
-        };
+  };
+  update_status_status_put: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["Status"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": unknown;
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  get_messages_messages_get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["MessageDto"][];
+        };
+      };
+    };
+  };
 }
