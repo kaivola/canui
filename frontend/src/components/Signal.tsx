@@ -1,4 +1,4 @@
-import { Card, Flex, Slider, Switch, Text } from "@radix-ui/themes";
+import { Card, Flex, Slider, Switch, Text, TextField } from "@radix-ui/themes";
 import { type FocusEvent, type KeyboardEvent, memo, useState } from "react";
 import type { Signal as SignalType } from "../types/schema";
 
@@ -29,14 +29,17 @@ export const Signal = memo(({ signal, onChange }: Props) => {
           <Flex justify={"between"} align={"center"}>
             <Text size={"4"}>{signal.displayName}</Text>
             {editMode ? (
-              <input
-                id={signal.name}
+              <TextField.Root
                 defaultValue={signal.value}
                 onBlur={saveInput}
                 onKeyDown={saveInput}
               />
             ) : (
-              <Text onClick={() => setEditMode(true)} size={"7"}>
+              <Text
+                style={{ cursor: "pointer" }}
+                onClick={() => setEditMode(true)}
+                size={"7"}
+              >
                 {signal.value}
               </Text>
             )}
