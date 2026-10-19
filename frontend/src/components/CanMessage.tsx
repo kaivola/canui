@@ -16,7 +16,7 @@ export const CanMessage = memo(
         <Flex justify={"between"} mb={"4"}>
           <Text size={"8"}>{message.id}</Text>
           <Button onClick={onHideClick}>
-            {message.hidden ? "Show" : "Hide"}
+            {message.hidden ? "Enable" : "Disable"}
           </Button>
         </Flex>
         {!message.hidden &&

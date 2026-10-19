@@ -1,6 +1,7 @@
 import { Button, Flex, Heading, Section } from "@radix-ui/themes";
 import { useCallback, useEffect, useRef } from "react";
 import { CanMessage } from "./components/CanMessage";
+import { MessageFilter } from "./components/MessageFilter";
 import { useMessages } from "./hooks/useMessages";
 import { useStatus } from "./hooks/useStatus";
 import { WEBSOCKET_URL } from "./utils/constants";
@@ -46,17 +47,25 @@ const App = () => {
           </Button>
         </Flex>
       </Section>
-      <div style={{ columnCount: 2, columnGap: "4 rem" }}>
-        {Boolean(Object.keys(messages).length) &&
-          Object.values(messages).map((message) => (
-            <CanMessage
-              key={message.id}
-              message={message}
-              changeVisibility={() => changeVisibility(message.id)}
-              onSignalChange={handleChange(message.id)}
-            />
-          ))}
-      </div>
+      <Section px={"4"}>
+        <MessageFilter
+          messages={messages}
+          changeVisibility={changeVisibility}
+        />
+        <div style={{ columnCount: 2, columnGap: "4 rem" }}>
+          {Boolean(Object.keys(messages).length) &&
+            Object.values(messages)
+              .filter((m) => !m.hidden)
+              .map((message) => (
+                <CanMessage
+                  key={message.id}
+                  message={message}
+                  changeVisibility={() => changeVisibility(message.id)}
+                  onSignalChange={handleChange(message.id)}
+                />
+              ))}
+        </div>
+      </Section>
     </div>
   );
 };

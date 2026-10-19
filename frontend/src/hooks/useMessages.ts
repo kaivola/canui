@@ -58,6 +58,7 @@ export const useMessages = () => {
   };
 
   const changeVisibility = (messageId: number) => {
+    fetch(BACKEND_URL + `/messages/${messageId}`);
     setMessages((prevMessages) => {
       const m = prevMessages[messageId];
       return {
