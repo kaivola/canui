@@ -17,7 +17,6 @@ async def can_data_websocket(
             message_id = data["messageId"]
             signal_name = data["signalName"]
             value = data["value"]
-            print(f"received: {data}")
 
             for msg in messages:
                 if msg.id != message_id:

@@ -26,3 +26,12 @@ def map_message(message: CanMessage) -> MessageDto:
 @router.get("", response_model=list[MessageDto])
 def get_messages(state: StateContainer = Depends(get_state)):
     return sorted([map_message(m) for m in state.data.messages], key=lambda x: x.id)
+
+@router.get("/{message_id}")
+def change_message_state(message_id: int, state: StateContainer = Depends(get_state)):
+    for msg in state.data.messages:
+        if msg.id == message_id:
+            msg.is_enabled = not msg.is_enabled
+            return
+    
+

@@ -9,11 +9,14 @@ class CanMessage:
     task: ModifiableCyclicTaskABC | None
     freq: int
     signal_values: dict[str, int | float]
+    is_enabled: bool
 
     def __init__(self, dbc_entry: DbcMessage, freq: int = 1):
         self.dbc_entry = dbc_entry
         self.id = dbc_entry.frame_id
         self.freq = freq
+        self.is_enabled = True
+        self.task = None
         if dbc_entry.signal_tree is None:
             return
         self.signal_values = dict.fromkeys(
@@ -26,6 +29,8 @@ class CanMessage:
         )
 
     def start_send_periodic(self, bus: BusABC):
+        if not self.is_enabled:
+            return
         task = bus.send_periodic(
             can.Message(
                 arbitration_id=self.dbc_entry.frame_id,
@@ -41,12 +46,14 @@ class CanMessage:
                 "The current CAN interface does not support modifiable tasks."
             )
 
+    def stop_send_periodic(self, bus: BusABC):
+        bus.stop_all_periodic_tasks()
+
     def update_signal(self, signal: str, new_value: int | float):
         if not hasattr(self, "task") or self.task is None:
             return
         msg = self.task.messages[0]
         decoded_data = self.dbc_entry.decode_simple(bytes(msg.data))
-        print(f"value: {new_value}")
         decoded_data.update({signal: new_value})
         new_data = self.dbc_entry.encode(decoded_data)
         msg.data = bytearray(new_data)
