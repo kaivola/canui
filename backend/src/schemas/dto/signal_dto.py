@@ -7,6 +7,7 @@ class SignalDto(BaseModel):
     length: int
     min_value: int | float | None
     max_value: int | float | None
+    display_name: str | None = None
     nominal_min: int | float | None = None
     nominal_max: int | float | None = None
     step: float = 1.0

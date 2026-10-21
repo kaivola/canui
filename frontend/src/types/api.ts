@@ -39,6 +39,23 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/messages/{message_id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Change Message State */
+    get: operations["change_message_state_messages__message_id__get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -67,6 +84,8 @@ export interface components {
       min_value: number | null;
       /** Max Value */
       max_value: number | null;
+      /** Display Name */
+      display_name?: string | null;
       /** Nominal Min */
       nominal_min?: number | null;
       /** Nominal Max */
@@ -99,6 +118,10 @@ export interface components {
       msg: string;
       /** Error Type */
       type: string;
+      /** Input */
+      input?: unknown;
+      /** Context */
+      ctx?: Record<string, never>;
     };
   };
   responses: never;
@@ -178,6 +201,37 @@ export interface operations {
         };
         content: {
           "application/json": components["schemas"]["MessageDto"][];
+        };
+      };
+    };
+  };
+  change_message_state_messages__message_id__get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        message_id: number;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": unknown;
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
         };
       };
     };

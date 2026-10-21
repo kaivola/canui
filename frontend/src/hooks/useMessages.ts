@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import type { Message, MessageDto } from "../types/schema";
 import { BACKEND_URL } from "../utils/constants";
-import { dbcSignals } from "../utils/signals";
 
 type Messages = Record<number, Message>;
 
@@ -10,13 +9,7 @@ const mapMessageData = (data: MessageDto[]): Messages => {
 
   for (const message of data) {
     const signalsRecord = Object.fromEntries(
-      message.signals.map((signal) => [
-        signal.name,
-        {
-          ...signal,
-          displayName: dbcSignals[message.id]?.[signal.name] ?? signal.name,
-        },
-      ]),
+      message.signals.map((signal) => [signal.name, signal]),
     );
 
     messagesRecord[message.id] = {

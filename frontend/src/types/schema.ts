@@ -8,6 +8,5 @@ export type Message = Omit<MessageDto, "signals"> & {
   signals: Record<string, Signal>;
 };
 export type Signal = SignalDto & {
-  displayName: string;
   value: number;
 };
