@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import type { Message, MessageDto } from "../types/schema";
 import { BACKEND_URL } from "../utils/constants";
 
@@ -51,27 +51,24 @@ export const useMessages = () => {
   };
 
   const changeVisibility = (messageId: number) => {
-    fetch(BACKEND_URL + `/messages/${messageId}`);
-    setMessages((prevMessages) => {
-      const m = prevMessages[messageId];
-      return {
-        ...prevMessages,
-        [messageId]: {
-          ...m,
-          hidden: !m.hidden,
-        },
-      };
-    });
+    fetch(BACKEND_URL + `/messages/${messageId}`)
+      .then(() =>
+        setMessages((prevMessages) => {
+          const m = prevMessages[messageId];
+          return {
+            ...prevMessages,
+            [messageId]: {
+              ...m,
+              hidden: !m.hidden,
+            },
+          };
+        }),
+      )
+      .catch(console.error);
   };
 
-  useEffect(() => {
-    fetch(BACKEND_URL + "/messages")
-      .then((res) => res.json())
-      .then((data: MessageDto[]) => {
-        setMessages(mapMessageData(data));
-      })
-      .catch((e) => console.error(e));
-  }, []);
+  const updateMessages = (data: MessageDto[]) =>
+    setMessages(mapMessageData(data));
 
-  return { messages, changeVisibility, updateSignalValue };
+  return { messages, updateMessages, changeVisibility, updateSignalValue };
 };

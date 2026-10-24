@@ -1,11 +1,10 @@
-from contextlib import asynccontextmanager
-
 import can
-from api import api_router
-from core.dbc import get_db
+from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from schemas.can_message import CanMessage
+
+from api import api_router
+from core.dbc import get_dbc_files
 from schemas.state import StateContainer
 
 try:
@@ -14,17 +13,12 @@ except Exception as e:
     print(f"CAN hardware not found, using virtual bus: {e}")
     bus = can.interface.Bus(channel="vcan0", bustype="socketcan")
 
-
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     state_container = StateContainer(bus)
-    db = get_db("./MaxxECU_v1.3.dbc")
-    if db is None:
-        raise RuntimeError()
-    messages = [CanMessage(msg) for msg in db.messages]
-
     state_container.bus = bus
-    state_container.data.messages = messages
+    state_container.data.dbc_files = get_dbc_files()
+    print(state_container.data.dbc_files)
     app.state.manager = state_container
     yield
 

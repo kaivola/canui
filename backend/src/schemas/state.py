@@ -5,8 +5,9 @@ from .can_message import CanMessage
 
 
 class AppState(BaseModel):
-    isBroadcasting: bool = False
+    is_broadcasting: bool = False
     messages: list[CanMessage] = []
+    dbc_files: list[str] = []
 
     class Config:
         arbitrary_types_allowed = True

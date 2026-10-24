@@ -1,31 +1,46 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
+from schemas.metadata import SignalMetadata
+from core.dbc import get_metadata, read_dbc_file
 from schemas.can_message import CanMessage
 from schemas.dto.message_dto import MessageDto
 from schemas.state import StateContainer
 from util.get_state import get_state
-from util.signal_ranges import MaxxECUSensibleRanges
 
 router = APIRouter()
 
-def map_message(message: CanMessage) -> MessageDto:
+def map_message(message: CanMessage, metadata: dict[str, SignalMetadata] | None) -> MessageDto:
     dto = MessageDto.from_can_message(message)
-    message_ranges = MaxxECUSensibleRanges.get(message.id, {})
+    if metadata is None:
+        return dto
     
-    if len(message_ranges.keys()) > 0:
+    if len(metadata.keys()) > 0:
         for s in dto.signals:
-            signal_range = message_ranges.get(s.name, None)
+            signal_metadata = metadata.get(s.name, None)
 
-            if signal_range is None:
+            if signal_metadata is None:
                 continue
-            s.nominal_min = signal_range.get("min", 0.0)
-            s.nominal_max = signal_range.get("max")
-            s.step = signal_range.get("step", 1.0)
+
+            s.nominal_min = signal_metadata.min
+            s.nominal_max = signal_metadata.max
+            s.step = signal_metadata.step
+            s.display_name = signal_metadata.displayName
         
     return dto
 
-@router.get("", response_model=list[MessageDto])
-def get_messages(state: StateContainer = Depends(get_state)):
-    return sorted([map_message(m) for m in state.data.messages], key=lambda x: x.id)
+@router.get("/dbc-files")
+def get_dbc_files(state: StateContainer = Depends(get_state)):
+    return state.data.dbc_files
+
+@router.post("/dbc-files/{filename}")
+def select_dbc_file(filename: str, state: StateContainer = Depends(get_state)):
+    db = read_dbc_file(filename)
+    if db is None:
+        raise HTTPException(status_code=400, detail="Invalid file")
+    messages = [CanMessage(msg) for msg in db.messages]
+    state.data.messages = messages
+    metadata = get_metadata(filename)
+
+    return sorted([map_message(msg, metadata.root.get(msg.id) if metadata is not None else None) for msg in messages], key=lambda x: x.id)
 
 @router.get("/{message_id}")
 def change_message_state(message_id: int, state: StateContainer = Depends(get_state)):
@@ -33,5 +48,3 @@ def change_message_state(message_id: int, state: StateContainer = Depends(get_st
         if msg.id == message_id:
             msg.is_enabled = not msg.is_enabled
             return
-    
-
