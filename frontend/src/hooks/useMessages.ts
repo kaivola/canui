@@ -50,8 +50,9 @@ export const useMessages = () => {
     });
   };
 
-  const changeVisibility = (messageId: number) => {
-    fetch(BACKEND_URL + `/messages/${messageId}`)
+  const toggleMessage = (messageId: number, enable: boolean) => {
+    const path = `${BACKEND_URL}/messages/${messageId}/${enable ? "enable" : "disable"}`;
+    fetch(path, { method: "POST" })
       .then(() =>
         setMessages((prevMessages) => {
           const m = prevMessages[messageId];
@@ -70,5 +71,5 @@ export const useMessages = () => {
   const updateMessages = (data: MessageDto[]) =>
     setMessages(mapMessageData(data));
 
-  return { messages, updateMessages, changeVisibility, updateSignalValue };
+  return { messages, updateMessages, toggleMessage, updateSignalValue };
 };

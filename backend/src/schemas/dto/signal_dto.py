@@ -1,5 +1,6 @@
 from cantools.database.can.signal import Signal
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
+from pydantic.alias_generators import to_camel
 
 class SignalDto(BaseModel):
     name: str
@@ -12,6 +13,11 @@ class SignalDto(BaseModel):
     nominal_max: int | float | None = None
     step: float = 1.0
     value: int | float = 0
+
+    model_config = ConfigDict(
+        alias_generator=to_camel,
+        populate_by_name=True
+    )
 
     @classmethod
     def from_signal(cls, signal: Signal, value: int | float):

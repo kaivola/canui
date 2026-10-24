@@ -27,7 +27,7 @@ export const Signal = memo(({ signal, onChange }: Props) => {
       <Flex direction={"column"} gap={"6"}>
         <Flex direction={"column"}>
           <Flex justify={"between"} align={"center"}>
-            <Text size={"4"}>{signal.display_name ?? signal.name}</Text>
+            <Text size={"4"}>{signal.displayName ?? signal.name}</Text>
             {editMode ? (
               <TextField.Root
                 defaultValue={signal.value}
@@ -50,9 +50,9 @@ export const Signal = memo(({ signal, onChange }: Props) => {
           <Slider
             value={[signal.value]}
             onValueChange={(e) => onChange(signal.name, e[0])}
-            min={signal.nominal_min ?? signal.min_value ?? 0}
+            min={signal.nominalMin ?? signal.minValue ?? 0}
             max={
-              signal.nominal_max ?? signal.max_value ?? Number.MAX_SAFE_INTEGER
+              signal.nominalMax ?? signal.maxValue ?? Number.MAX_SAFE_INTEGER
             }
             step={signal.step}
           />

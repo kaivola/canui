@@ -18,7 +18,6 @@ async def lifespan(app: FastAPI):
     state_container = StateContainer(bus)
     state_container.bus = bus
     state_container.data.dbc_files = get_dbc_files()
-    print(state_container.data.dbc_files)
     app.state.manager = state_container
     yield
 

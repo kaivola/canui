@@ -11,7 +11,7 @@ const App = () => {
   const timerRef = useRef<number | null>(null);
   const [files, setFiles] = useState<string[]>([]);
 
-  const { messages, updateMessages, changeVisibility, updateSignalValue } =
+  const { messages, updateMessages, toggleMessage, updateSignalValue } =
     useMessages();
   const { isTransmitting, changeStatus } = useStatus();
 
@@ -45,7 +45,10 @@ const App = () => {
     if (filename.trim().length > 0) {
       fetch(`${BACKEND_URL}/messages/dbc-files/${filename}`, { method: "POST" })
         .then((res) => res.json())
-        .then(updateMessages)
+        .then((messages) => {
+          ws.current = new WebSocket(WEBSOCKET_URL + "/can-data");
+          updateMessages(messages);
+        })
         .catch(console.error);
     }
   };
@@ -77,10 +80,7 @@ const App = () => {
               ))}
             </Select.Content>
           </Select.Root>
-          <MessageFilter
-            messages={messages}
-            changeVisibility={changeVisibility}
-          />
+          <MessageFilter messages={messages} toggleMessage={toggleMessage} />
         </Flex>
         <div style={{ columnCount: 2, columnGap: "4 rem" }}>
           {Boolean(Object.keys(messages).length) &&
@@ -90,7 +90,7 @@ const App = () => {
                 <CanMessage
                   key={message.id}
                   message={message}
-                  changeVisibility={() => changeVisibility(message.id)}
+                  changeVisibility={() => toggleMessage(message.id, false)}
                   onSignalChange={handleSignalValueChange(message.id)}
                 />
               ))}

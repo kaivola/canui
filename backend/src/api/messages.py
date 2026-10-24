@@ -27,11 +27,11 @@ def map_message(message: CanMessage, metadata: dict[str, SignalMetadata] | None)
         
     return dto
 
-@router.get("/dbc-files")
+@router.get("/dbc-files", response_model=list[str])
 def get_dbc_files(state: StateContainer = Depends(get_state)):
     return state.data.dbc_files
 
-@router.post("/dbc-files/{filename}")
+@router.post("/dbc-files/{filename}", response_model=list[MessageDto])
 def select_dbc_file(filename: str, state: StateContainer = Depends(get_state)):
     db = read_dbc_file(filename)
     if db is None:
@@ -42,9 +42,16 @@ def select_dbc_file(filename: str, state: StateContainer = Depends(get_state)):
 
     return sorted([map_message(msg, metadata.root.get(msg.id) if metadata is not None else None) for msg in messages], key=lambda x: x.id)
 
-@router.get("/{message_id}")
-def change_message_state(message_id: int, state: StateContainer = Depends(get_state)):
+@router.post("/{message_id}/enable")
+def enable_message(message_id: int, state: StateContainer = Depends(get_state)):
     for msg in state.data.messages:
         if msg.id == message_id:
-            msg.is_enabled = not msg.is_enabled
+            msg.is_enabled = True
+            return
+
+@router.post("/{message_id}/disable")
+def disable_message(message_id: int, state: StateContainer = Depends(get_state)):
+    for msg in state.data.messages:
+        if msg.id == message_id:
+            msg.is_enabled = False
             return

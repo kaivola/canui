@@ -4,12 +4,12 @@ import type { Message } from "../types/schema";
 
 type MessageFilterProps = {
   messages: Record<number, Message>;
-  changeVisibility: (messageId: number) => void;
+  toggleMessage: (messageId: number, enable: boolean) => void;
 };
 
 export const MessageFilter = ({
   messages,
-  changeVisibility,
+  toggleMessage,
 }: MessageFilterProps) => {
   const messageCount = useMemo(() => {
     const m = Object.values(messages);
@@ -28,7 +28,7 @@ export const MessageFilter = ({
           <DropdownMenu.CheckboxItem
             key={m.id}
             checked={!m.hidden}
-            onCheckedChange={() => changeVisibility(m.id)}
+            onCheckedChange={(enable) => toggleMessage(m.id, enable)}
           >
             {m.id}
           </DropdownMenu.CheckboxItem>

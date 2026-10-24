@@ -10,7 +10,11 @@
         "responses": {
           "200": {
             "description": "Successful Response",
-            "content": { "application/json": { "schema": {} } }
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/StatusDto" }
+              }
+            }
           }
         }
       },
@@ -29,6 +33,97 @@
         "responses": {
           "200": {
             "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/StatusDto" }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/messages/dbc-files": {
+      "get": {
+        "tags": ["messages"],
+        "summary": "Get Dbc Files",
+        "operationId": "get_dbc_files_messages_dbc_files_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": { "type": "string" },
+                  "type": "array",
+                  "title": "Response Get Dbc Files Messages Dbc Files Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/messages/dbc-files/{filename}": {
+      "post": {
+        "tags": ["messages"],
+        "summary": "Select Dbc File",
+        "operationId": "select_dbc_file_messages_dbc_files__filename__post",
+        "parameters": [
+          {
+            "name": "filename",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "title": "Filename" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/MessageDto" },
+                  "title": "Response Select Dbc File Messages Dbc Files  Filename  Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/messages/{message_id}/enable": {
+      "post": {
+        "tags": ["messages"],
+        "summary": "Enable Message",
+        "operationId": "enable_message_messages__message_id__enable_post",
+        "parameters": [
+          {
+            "name": "message_id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "title": "Message Id" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
             "content": { "application/json": { "schema": {} } }
           },
           "422": {
@@ -42,32 +137,11 @@
         }
       }
     },
-    "/messages": {
-      "get": {
+    "/messages/{message_id}/disable": {
+      "post": {
         "tags": ["messages"],
-        "summary": "Get Messages",
-        "operationId": "get_messages_messages_get",
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "items": { "$ref": "#/components/schemas/MessageDto" },
-                  "type": "array",
-                  "title": "Response Get Messages Messages Get"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/messages/{message_id}": {
-      "get": {
-        "tags": ["messages"],
-        "summary": "Change Message State",
-        "operationId": "change_message_state_messages__message_id__get",
+        "summary": "Disable Message",
+        "operationId": "disable_message_messages__message_id__disable_post",
         "parameters": [
           {
             "name": "message_id",
@@ -127,41 +201,41 @@
             "title": "Comment"
           },
           "length": { "type": "integer", "title": "Length" },
-          "min_value": {
+          "minValue": {
             "anyOf": [
               { "type": "integer" },
               { "type": "number" },
               { "type": "null" }
             ],
-            "title": "Min Value"
+            "title": "Minvalue"
           },
-          "max_value": {
+          "maxValue": {
             "anyOf": [
               { "type": "integer" },
               { "type": "number" },
               { "type": "null" }
             ],
-            "title": "Max Value"
+            "title": "Maxvalue"
           },
-          "display_name": {
+          "displayName": {
             "anyOf": [{ "type": "string" }, { "type": "null" }],
-            "title": "Display Name"
+            "title": "Displayname"
           },
-          "nominal_min": {
+          "nominalMin": {
             "anyOf": [
               { "type": "integer" },
               { "type": "number" },
               { "type": "null" }
             ],
-            "title": "Nominal Min"
+            "title": "Nominalmin"
           },
-          "nominal_max": {
+          "nominalMax": {
             "anyOf": [
               { "type": "integer" },
               { "type": "number" },
               { "type": "null" }
             ],
-            "title": "Nominal Max"
+            "title": "Nominalmax"
           },
           "step": { "type": "number", "title": "Step", "default": 1.0 },
           "value": {
@@ -171,7 +245,7 @@
           }
         },
         "type": "object",
-        "required": ["name", "comment", "length", "min_value", "max_value"],
+        "required": ["name", "comment", "length", "minValue", "maxValue"],
         "title": "SignalDto"
       },
       "Status": {
@@ -181,6 +255,14 @@
         "type": "object",
         "required": ["status"],
         "title": "Status"
+      },
+      "StatusDto": {
+        "properties": {
+          "isBroadcasting": { "type": "boolean", "title": "Isbroadcasting" }
+        },
+        "type": "object",
+        "required": ["isBroadcasting"],
+        "title": "StatusDto"
       },
       "StatusOptions": {
         "type": "string",

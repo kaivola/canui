@@ -22,15 +22,15 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  "/messages": {
+  "/messages/dbc-files": {
     parameters: {
       query?: never;
       header?: never;
       path?: never;
       cookie?: never;
     };
-    /** Get Messages */
-    get: operations["get_messages_messages_get"];
+    /** Get Dbc Files */
+    get: operations["get_dbc_files_messages_dbc_files_get"];
     put?: never;
     post?: never;
     delete?: never;
@@ -39,17 +39,51 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  "/messages/{message_id}": {
+  "/messages/dbc-files/{filename}": {
     parameters: {
       query?: never;
       header?: never;
       path?: never;
       cookie?: never;
     };
-    /** Change Message State */
-    get: operations["change_message_state_messages__message_id__get"];
+    get?: never;
     put?: never;
-    post?: never;
+    /** Select Dbc File */
+    post: operations["select_dbc_file_messages_dbc_files__filename__post"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/messages/{message_id}/enable": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Enable Message */
+    post: operations["enable_message_messages__message_id__enable_post"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/messages/{message_id}/disable": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Disable Message */
+    post: operations["disable_message_messages__message_id__disable_post"];
     delete?: never;
     options?: never;
     head?: never;
@@ -80,16 +114,16 @@ export interface components {
       comment: string | null;
       /** Length */
       length: number;
-      /** Min Value */
-      min_value: number | null;
-      /** Max Value */
-      max_value: number | null;
-      /** Display Name */
-      display_name?: string | null;
-      /** Nominal Min */
-      nominal_min?: number | null;
-      /** Nominal Max */
-      nominal_max?: number | null;
+      /** Minvalue */
+      minValue: number | null;
+      /** Maxvalue */
+      maxValue: number | null;
+      /** Displayname */
+      displayName?: string | null;
+      /** Nominalmin */
+      nominalMin?: number | null;
+      /** Nominalmax */
+      nominalMax?: number | null;
       /**
        * Step
        * @default 1
@@ -104,6 +138,11 @@ export interface components {
     /** Status */
     Status: {
       status: components["schemas"]["StatusOptions"];
+    };
+    /** StatusDto */
+    StatusDto: {
+      /** Isbroadcasting */
+      isBroadcasting: boolean;
     };
     /**
      * StatusOptions
@@ -147,7 +186,7 @@ export interface operations {
           [name: string]: unknown;
         };
         content: {
-          "application/json": unknown;
+          "application/json": components["schemas"]["StatusDto"];
         };
       };
     };
@@ -171,7 +210,7 @@ export interface operations {
           [name: string]: unknown;
         };
         content: {
-          "application/json": unknown;
+          "application/json": components["schemas"]["StatusDto"];
         };
       };
       /** @description Validation Error */
@@ -185,7 +224,7 @@ export interface operations {
       };
     };
   };
-  get_messages_messages_get: {
+  get_dbc_files_messages_dbc_files_get: {
     parameters: {
       query?: never;
       header?: never;
@@ -200,12 +239,74 @@ export interface operations {
           [name: string]: unknown;
         };
         content: {
-          "application/json": components["schemas"]["MessageDto"][];
+          "application/json": string[];
         };
       };
     };
   };
-  change_message_state_messages__message_id__get: {
+  select_dbc_file_messages_dbc_files__filename__post: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        filename: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["MessageDto"][];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  enable_message_messages__message_id__enable_post: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        message_id: number;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": unknown;
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  disable_message_messages__message_id__disable_post: {
     parameters: {
       query?: never;
       header?: never;

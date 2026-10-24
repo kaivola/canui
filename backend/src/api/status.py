@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends
+from schemas.dto.status_dto import StatusDto
 from schemas.state import StateContainer
 from schemas.status import Status
 from util.get_state import get_state
@@ -6,12 +7,12 @@ from util.get_state import get_state
 router = APIRouter()
 
 
-@router.get("")
+@router.get("", response_model=StatusDto)
 def get_status(state: StateContainer = Depends(get_state)):
     return {"isBroadcasting": state.data.is_broadcasting}
 
 
-@router.put("")
+@router.put("", response_model=StatusDto)
 def update_status(data: Status, state: StateContainer = Depends(get_state)):
     if data.status == "start":
         state.data.is_broadcasting = True
