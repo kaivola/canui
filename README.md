@@ -4,6 +4,39 @@ A WebUI for interacting with a CAN interface. The backend parses CAN messages fr
 
 The frontend opens a WebSocket connection to send signal values to the backend, which continuously updates the data transmitted over the CAN bus.
 
+## Installation using Podman/Docker
+
+### 1. Set Up the CAN Interface
+Create a virtual CAN interface:
+
+```bash
+sudo ip link add dev vcan0 type vcan
+```
+
+Bring the interface up:
+```bash
+sudo ip link set up vcan0
+```
+
+You can monitor the newly added virtual CAN interface with:
+```bash
+candump vcan0
+```
+
+### 2. Build the image
+```bash
+podman build -t canui -f Dockerfile .
+```
+
+### 3. Run the container
+`--net=host` is required to access the vcan0 interface from the container
+```bash
+podman run --net=host canui:latest
+```
+
+The app should now be accessible at http://localhost:8000
+
+
 ## Development
 
 ### 1. Set Up the CAN Interface
