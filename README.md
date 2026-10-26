@@ -1,4 +1,4 @@
-# CAN Simulator
+# canui
 
 A WebUI for interacting with a CAN interface. The backend parses CAN messages from a DBC file and serves them to the frontend.
 

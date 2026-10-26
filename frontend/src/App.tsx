@@ -55,9 +55,9 @@ const App = () => {
 
   return (
     <div>
-      <Section px={"4"}>
+      <Section px={"8"}>
         <Flex justify={"between"}>
-          <Heading>Can Simulator</Heading>
+          <Heading size={'8'}>can<span style={{color: 'var(--accent-10)'}}>ui</span></Heading>
           <Button
             onClick={() => changeStatus(isTransmitting ? "stop" : "start")}
           >
@@ -65,7 +65,7 @@ const App = () => {
           </Button>
         </Flex>
       </Section>
-      <Section px={"4"}>
+      <Section px={"8"}>
         <Flex gap={"4"}>
           <Select.Root onValueChange={handleFileChange}>
             <Select.Trigger placeholder="Select dbc file" />
