@@ -3,13 +3,14 @@ import cantools
 from pathlib import Path
 from cantools.database.can.database import Database
 
+from schemas.settings import Settings
 from schemas.metadata import Metadata
 
-DBC_DIR = "data"
+settings = Settings()
 
 
 def get_dbc_files() -> list[str]:
-    dir_path = Path(DBC_DIR)
+    dir_path = Path(settings.dbc_dir)
     if not dir_path.exists() or not dir_path.is_dir():
         return []
 
@@ -17,7 +18,7 @@ def get_dbc_files() -> list[str]:
 
 
 def read_dbc_file(filename: str) -> Database | None:
-    file_path = Path(DBC_DIR, filename)
+    file_path = Path(settings.dbc_dir, filename)
     try:
         db = cantools.database.load_file(file_path)
         if not isinstance(db, Database):
@@ -29,7 +30,7 @@ def read_dbc_file(filename: str) -> Database | None:
 
 def get_metadata(filename: str) -> Metadata | None:
     json_file = filename.replace(".dbc", ".json")
-    file_path = Path(DBC_DIR, json_file)
+    file_path = Path(settings.dbc_dir, json_file)
 
     try:
         with open(file_path, "r", encoding="utf-8") as file:
