@@ -21,16 +21,16 @@ class CanMessage:
         self.freq = freq
         self.is_enabled = True
         self.task = None
-        if dbc_entry.signal_tree is None:
-            return
-        self.signal_values = dict.fromkeys(
-            [
-                item
-                for sublist in dbc_entry.signal_tree
-                for item in (sublist if isinstance(sublist, list) else [sublist])
-            ],
-            0,
-        )
+
+        if dbc_entry.signal_tree is not None:
+            self.signal_values = dict.fromkeys(
+                [
+                    item
+                    for sublist in dbc_entry.signal_tree
+                    for item in (sublist if isinstance(sublist, list) else [sublist])
+                ],
+                0,
+            )
 
     def start_send_periodic(self, bus: BusABC):
         if not self.is_enabled:
@@ -50,13 +50,13 @@ class CanMessage:
                 "The current CAN interface does not support modifiable tasks."
             )
 
-    def update_signal(self, signal: str, new_value: int | float):
+    def update_signal(self, signal_name: str, new_value: int | float):
         if not hasattr(self, "task") or self.task is None:
             return
         msg = self.task.messages[0]
         decoded_data = self.dbc_entry.decode_simple(bytes(msg.data))
-        decoded_data.update({signal: new_value})
+        decoded_data.update({signal_name: new_value})
         new_data = self.dbc_entry.encode(decoded_data)
         msg.data = bytearray(new_data)
         self.task.modify_data(msg)
-        self.signal_values[signal] = new_value
+        self.signal_values[signal_name] = new_value

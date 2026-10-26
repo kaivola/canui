@@ -16,7 +16,6 @@ const App = () => {
   const { isTransmitting, changeStatus } = useStatus();
 
   useEffect(() => {
-    ws.current = new WebSocket(WEBSOCKET_URL + "/can-data");
     fetch(BACKEND_URL + "/messages/dbc-files")
       .then((res) => res.json())
       .then(setFiles)
@@ -46,6 +45,7 @@ const App = () => {
       fetch(`${BACKEND_URL}/messages/dbc-files/${filename}`, { method: "POST" })
         .then((res) => res.json())
         .then((messages) => {
+          ws.current?.close();
           ws.current = new WebSocket(WEBSOCKET_URL + "/can-data");
           updateMessages(messages);
         })
@@ -57,7 +57,9 @@ const App = () => {
     <div>
       <Section px={"8"}>
         <Flex justify={"between"}>
-          <Heading size={'8'}>can<span style={{color: 'var(--accent-10)'}}>ui</span></Heading>
+          <Heading size={"8"}>
+            can<span style={{ color: "var(--accent-10)" }}>ui</span>
+          </Heading>
           <Button
             onClick={() => changeStatus(isTransmitting ? "stop" : "start")}
           >

@@ -30,7 +30,7 @@ export const MessageFilter = ({
             checked={!m.hidden}
             onCheckedChange={(enable) => toggleMessage(m.id, enable)}
           >
-            {m.id}
+            {m.name}
           </DropdownMenu.CheckboxItem>
         ))}
       </DropdownMenu.Content>
