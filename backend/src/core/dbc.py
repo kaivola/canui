@@ -7,11 +7,12 @@ from schemas.metadata import Metadata
 
 DBC_DIR = "data"
 
+
 def get_dbc_files() -> list[str]:
     dir_path = Path(DBC_DIR)
     if not dir_path.exists() or not dir_path.is_dir():
         return []
-    
+
     return [file.name for file in dir_path.glob("*.dbc") if file.is_file()]
 
 
@@ -31,7 +32,7 @@ def get_metadata(filename: str) -> Metadata | None:
     file_path = Path(DBC_DIR, json_file)
 
     try:
-        with open(file_path, 'r', encoding='utf-8') as file:
+        with open(file_path, "r", encoding="utf-8") as file:
             raw_data = json.load(file)
 
         metadata = Metadata.model_validate(raw_data)

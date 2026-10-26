@@ -103,6 +103,10 @@ export interface components {
     MessageDto: {
       /** Id */
       id: number;
+      /** Address */
+      address: number;
+      /** Name */
+      name: string;
       /** Signals */
       signals: components["schemas"]["SignalDto"][];
     };

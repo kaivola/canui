@@ -20,7 +20,6 @@ def update_status(data: Status, state: StateContainer = Depends(get_state)):
             msg.start_send_periodic(state.bus)
     elif data.status == "stop":
         state.data.is_broadcasting = False
-        for msg in state.data.messages:
-            msg.stop_send_periodic(state.bus)
+        state.bus.stop_all_periodic_tasks()
 
     return {"isBroadcasting": state.data.is_broadcasting}

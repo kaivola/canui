@@ -2,6 +2,7 @@ from cantools.database.can.signal import Signal
 from pydantic import BaseModel, ConfigDict
 from pydantic.alias_generators import to_camel
 
+
 class SignalDto(BaseModel):
     name: str
     comment: str | None
@@ -14,10 +15,7 @@ class SignalDto(BaseModel):
     step: float = 1.0
     value: int | float = 0
 
-    model_config = ConfigDict(
-        alias_generator=to_camel,
-        populate_by_name=True
-    )
+    model_config = ConfigDict(alias_generator=to_camel, populate_by_name=True)
 
     @classmethod
     def from_signal(cls, signal: Signal, value: int | float):
@@ -27,5 +25,5 @@ class SignalDto(BaseModel):
             length=signal.length,
             min_value=signal.minimum,
             max_value=signal.maximum,
-            value=value
+            value=value,
         )

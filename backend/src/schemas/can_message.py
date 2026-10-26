@@ -5,6 +5,8 @@ from cantools.database.can.message import Message as DbcMessage
 
 class CanMessage:
     id: int
+    name: str
+    address: int
     dbc_entry: DbcMessage
     task: ModifiableCyclicTaskABC | None
     freq: int
@@ -14,6 +16,8 @@ class CanMessage:
     def __init__(self, dbc_entry: DbcMessage, freq: int = 1):
         self.dbc_entry = dbc_entry
         self.id = dbc_entry.frame_id
+        self.address = dbc_entry.frame_id
+        self.name = dbc_entry.name
         self.freq = freq
         self.is_enabled = True
         self.task = None
@@ -45,9 +49,6 @@ class CanMessage:
             raise TypeError(
                 "The current CAN interface does not support modifiable tasks."
             )
-
-    def stop_send_periodic(self, bus: BusABC):
-        bus.stop_all_periodic_tasks()
 
     def update_signal(self, signal: str, new_value: int | float):
         if not hasattr(self, "task") or self.task is None:

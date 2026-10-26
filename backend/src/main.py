@@ -13,6 +13,7 @@ except Exception as e:
     print(f"CAN hardware not found, using virtual bus: {e}")
     bus = can.interface.Bus(channel="vcan0", bustype="socketcan")
 
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     state_container = StateContainer(bus)

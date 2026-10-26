@@ -8,11 +8,14 @@ from util.get_state import get_state
 
 router = APIRouter()
 
-def map_message(message: CanMessage, metadata: dict[str, SignalMetadata] | None) -> MessageDto:
+
+def map_message(
+    message: CanMessage, metadata: dict[str, SignalMetadata] | None
+) -> MessageDto:
     dto = MessageDto.from_can_message(message)
     if metadata is None:
         return dto
-    
+
     if len(metadata.keys()) > 0:
         for s in dto.signals:
             signal_metadata = metadata.get(s.name, None)
@@ -24,12 +27,14 @@ def map_message(message: CanMessage, metadata: dict[str, SignalMetadata] | None)
             s.nominal_max = signal_metadata.max
             s.step = signal_metadata.step
             s.display_name = signal_metadata.displayName
-        
+
     return dto
+
 
 @router.get("/dbc-files", response_model=list[str])
 def get_dbc_files(state: StateContainer = Depends(get_state)):
     return state.data.dbc_files
+
 
 @router.post("/dbc-files/{filename}", response_model=list[MessageDto])
 def select_dbc_file(filename: str, state: StateContainer = Depends(get_state)):
@@ -40,7 +45,16 @@ def select_dbc_file(filename: str, state: StateContainer = Depends(get_state)):
     state.data.messages = messages
     metadata = get_metadata(filename)
 
-    return sorted([map_message(msg, metadata.root.get(msg.id) if metadata is not None else None) for msg in messages], key=lambda x: x.id)
+    return sorted(
+        [
+            map_message(
+                msg, metadata.root.get(msg.id) if metadata is not None else None
+            )
+            for msg in messages
+        ],
+        key=lambda x: x.id,
+    )
+
 
 @router.post("/{message_id}/enable")
 def enable_message(message_id: int, state: StateContainer = Depends(get_state)):
@@ -48,6 +62,7 @@ def enable_message(message_id: int, state: StateContainer = Depends(get_state)):
         if msg.id == message_id:
             msg.is_enabled = True
             return
+
 
 @router.post("/{message_id}/disable")
 def disable_message(message_id: int, state: StateContainer = Depends(get_state)):
